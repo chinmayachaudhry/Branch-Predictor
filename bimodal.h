@@ -72,17 +72,21 @@ class bimodal
 			{
 				if(predictor_table.at(index) < 3)
 					predictor_table.at(index) = predictor_table.at(index) + 1;
+				if(predicted_branch == 0)
+					mispredictions++;
+				else
+					true_predictions++;
 			}		
 			else if(actual_branch == 'n')
 			{	
 				if(predictor_table.at(index) > 0)
 					predictor_table.at(index) = predictor_table.at(index) - 1;
+				if(predicted_branch == 1)
+					mispredictions++;
+				else
+					true_predictions++;
 			}
 
-			if((actual_branch == 't' && predicted_branch == 1) || (actual_branch == 'n' && predicted_branch == 0))
-				true_predictions++;
-			else
-				mispredictions++;
 		}
 
 		void access(ll address, char actual_branch)
