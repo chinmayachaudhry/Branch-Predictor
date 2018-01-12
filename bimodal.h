@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <vector>
 #include <bitset>
-#include <iomanip>
+#include "btb.h"
 
 using namespace std;
 typedef long long ll;
@@ -23,6 +23,7 @@ class bimodal
 		ll  offset_bits, sets;
 		vector<int> predictor_table;
 		vector<int> :: iterator it;
+		btb *branch_buffer;
 		ll mask(ll N)
 		{
 			ll mask = 0;
@@ -35,22 +36,21 @@ class bimodal
 		}
 	
 	public:
-		bimodal(ll index_bits)
+		bimodal(ll index_bits, btb * branch_buffer)
 		{
 			predictions = mispredictions = true_predictions = 0;
-			offset_bits = 2;
-			index_mask = mask(index_bits);
+//			offset_bits = 2;
+			index_mask = mask(index_bits + 2);				// 4-Byte instruction. Hence lowest 2 bits are always 0 for address. Hence ignored
 //			cout << "Mask: " << index_mask << endl << endl;
 			sets = (ll)pow(2.0, index_bits);
 //			cout << "Sets: " << sets << endl;
 			for(ll i = 0; i<sets; i++)
-				predictor_table.push_back(2);			// Initialize 'Weakly Taken' i.e 2
+				predictor_table.push_back(2);				// Initialize 'Weakly Taken' i.e 2
+
+			this->branch_buffer = branch_buffer;
 		}
 		
-		ll calc_Index(ll address)
-		{
-			return (((address) >> offset_bits) & index_mask);
-		}
+		ll calc_Index(ll address) {return ((address & index_mask) >> 2);}	// 4-Byte instruction. Hence lowest 2 bits are always 0 for address. Hence ignored
 	
 		int predict(ll address, char actual_branch)
 		{	
@@ -99,6 +99,9 @@ class bimodal
 
 		void display_table()
 		{
+			if(branch_buffer != NULL)
+				branch_buffer->display();
+			
 			cout << endl << "Final Bimodal Table Contents:" << endl;
 			for(it = predictor_table.begin(); it != predictor_table.end(); it++)
 			{
@@ -110,13 +113,24 @@ class bimodal
 
 		void print_stats()
 		{
-			cout << endl << "Final Branch Predictor Statistics:" << endl;
-			cout << "a. Number of branches: " << predictions << endl;
-			cout << "b. Number of predictions from the branch predictor: " << predictions << endl;
-			cout << "c. Number of mispredictions from the branch predictor: " << mispredictions << endl;
-			cout << "d. Number of mispredictions from the BTB: " << "0" << endl;
-			//cout << "e.Misprediction Rate: " << fixed << setprecision(2) << (float)((mispredictions_BTB + mispredictions)/(float)(predictions))*100 << " percent" << endl;
-//			cout << "True Predictions: " << true_predictions << endl;		
+			if(branch_buffer == NULL)
+			{
+				cout << endl << "Final Branch Predictor Statistics:" << endl;
+				cout << "a. Number of branches: " << predictions << endl;
+				cout << "b. Number of predictions from the branch predictor: " << predictions << endl;
+				cout << "c. Number of mispredictions from the branch predictor: " << mispredictions << endl;
+				cout << "d. Number of mispredictions from the BTB: " << "0" << endl;
+				cout << "e. Misprediction Rate: " << fixed << setprecision(2) << (float)((mispredictions)/(float)(predictions))*100 << " percent" << endl;
+			}
+			else
+			{
+				cout << endl << "Final Branch Predictor Statistics:" << endl;
+				cout << "a. Number of branches: " << branch_buffer->get_branch_count() << endl;
+				cout << "b. Number of predictions from the branch predictor: " << predictions << endl;
+				cout << "c. Number of mispredictions from the branch predictor: " << mispredictions << endl;
+				cout << "d. Number of mispredictions from the BTB: " << branch_buffer->getMispredictions() << endl;
+				cout << "e. Misprediction Rate: " << fixed << setprecision(2) << (float)((branch_buffer->getMispredictions() + mispredictions)/(float)(branch_buffer->get_branch_count()))*100 << " percent" << endl;
+			}
 		}
 
 

@@ -1,5 +1,6 @@
 #include "bimodal.h"
-
+#include "btb.h"
+#include "btb_cacheline.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,22 +18,36 @@ int main(int argc, char *argv[])
 	ifstream fin;
 
 	bimodal *b;
-
+	btb *branch_buffer;
 	switch(predictor_type)
 	{
 		case 0:
 			predictor_index_bits = atol(argv[2]);
 			btb_index_bits = atol(argv[3]);
 			btb_assoc = atol(argv[4]);
-			b = new bimodal(predictor_index_bits);
+			//cout << "index: " << btb_index_bits << " assoc: " << btb_assoc << endl;
+			if(btb_index_bits == 0)
+				branch_buffer = NULL;
+			else
+				branch_buffer = new btb(btb_index_bits, btb_assoc);
+			b = new bimodal(predictor_index_bits, branch_buffer);
 //			b->display_table();
 
 	}
 
 	fin.open(fname);
+	static int branches = 0;
 	while(fin >> hex >> address >> actual_branch)
 	{
-		b->access(address, actual_branch);	
+		branches++;
+		if(btb_index_bits != 0 && btb_assoc != 0)
+		{
+			branch_buffer->access(address, actual_branch);
+			if(branch_buffer->get_btb_Hit() == true)		
+				b->access(address, actual_branch);	
+		}	
+		else
+			b->access(address, actual_branch);	
 	}
 	fin.close();
 
@@ -41,9 +56,9 @@ int main(int argc, char *argv[])
 	cout << "./sim_bp bimodal " << argv[2] << " " << argv[3] << " " << argv[4] << " " << argv[5] << endl;
 	b->display_table();
 	b->print_stats();
-
-
-
-
+/*	cout << " Total branches: " << branches <<endl;
+	cout << "BTB Count: " << branch_buffer->get_branch_count() << endl;
+	cout << "BTB Misprediction: " << branch_buffer->getMispredictions() << endl;
+*/
 	return 1;
 }
