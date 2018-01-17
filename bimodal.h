@@ -11,7 +11,6 @@
 #include <bitset>
 #include "btb.h"
 
-using namespace std;
 typedef long long ll;
 
 class bimodal
@@ -21,11 +20,11 @@ class bimodal
 		ll index_mask;
 		int predicted_branch;
 		ll  offset_bits, sets;
-		vector<int> predictor_table;
-		vector<int> :: iterator it;
+		std::vector<int> predictor_table;
+		std::vector<int> :: iterator it;
 		btb *branch_buffer;
-		ll mask(ll N)
-		{
+		ll mask(ll);
+/*		{
 			ll mask = 0;
 			for(ll i = 0; i<N; i++)
 			{
@@ -34,10 +33,10 @@ class bimodal
 			} 
 			return (mask);
 		}
-	
+*/	
 	public:
-		bimodal(ll index_bits, btb * branch_buffer)
-		{
+		bimodal(ll, btb*);
+	/*	{
 			predictions = mispredictions = true_predictions = 0;
 //			offset_bits = 2;
 			index_mask = mask(index_bits + 2);				// 4-Byte instruction. Hence lowest 2 bits are always 0 for address. Hence ignored
@@ -48,21 +47,21 @@ class bimodal
 				predictor_table.push_back(2);				// Initialize 'Weakly Taken' i.e 2
 
 			this->branch_buffer = branch_buffer;
-		}
+		}*/
 		
 		ll calc_Index(ll address) {return ((address & index_mask) >> 2);}	// 4-Byte instruction. Hence lowest 2 bits are always 0 for address. Hence ignored
 	
-		int predict(ll address, char actual_branch)
-		{	
+		int predict(ll, char);
+		/*{	
 			ll index = calc_Index(address);
 			if(predictor_table.at(index) >= 2)
 				return 1;
 			else
 				return 0;
-		}
+		}*/
 		
-		void update_prediction_table(ll address, int predicted_branch, char actual_branch)
-		{
+		void update_prediction_table(ll, int, char);
+		/*{
 		//	cout << "MisPred: " << mispredictions << endl;
 		//	cout << "Actual: " << actual_branch << endl;
 		//	cout << "Predicted: " << predicted_branch << endl;
@@ -87,18 +86,18 @@ class bimodal
 					true_predictions++;
 			}
 
-		}
+		}*/
 
-		void access(ll address, char actual_branch)
-		{
+		void access(ll, char);
+		/*{
 			predictions++;
 			predicted_branch = predict(address, actual_branch);
 			//cout << predict(address, actual_branch) << endl;
 			update_prediction_table(address, predicted_branch, actual_branch);
-		}
+		}*/
 
-		void display_table()
-		{
+		void display_table();
+		/*{
 			if(branch_buffer != NULL)
 				branch_buffer->display();
 			
@@ -108,11 +107,11 @@ class bimodal
 				int index = distance(predictor_table.begin(), it); 
 				cout << "table[" << index << "]: " << predictor_table.at(index) << endl;	
 			}
-		}
+		}*/
 
 
-		void print_stats()
-		{
+		void print_stats();
+		/*{
 			if(branch_buffer == NULL)
 			{
 				cout << endl << "Final Branch Predictor Statistics:" << endl;
@@ -131,7 +130,7 @@ class bimodal
 				cout << "d. Number of mispredictions from the BTB: " << branch_buffer->getMispredictions() << endl;
 				cout << "e. Misprediction Rate: " << fixed << setprecision(2) << (float)((branch_buffer->getMispredictions() + mispredictions)/(float)(branch_buffer->get_branch_count()))*100 << " percent" << endl;
 			}
-		}
+		}*/
 
 
 };
