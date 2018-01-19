@@ -4,9 +4,9 @@ OPT = -g
 WARN = -Wall
 CFLAGS = $(OPT) $(WARN) $(INC) $(LIB)
 
-SIM_SRC = main.cpp btb.cpp bimodal.cpp 
+SIM_SRC = main.cpp btb.cpp bimodal.cpp gshare.cpp 
 
-SIM_OBJ = main.o btb.o bimodal.o
+SIM_OBJ = main.o btb.o bimodal.o gshare.o
 
 all: sim
 	    @echo "my work is done here..."
