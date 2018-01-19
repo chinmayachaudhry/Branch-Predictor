@@ -29,7 +29,7 @@ bimodal :: bimodal(ll index_bits, btb * branch_buffer)
 	this->branch_buffer = branch_buffer;
 }
 
-int bimodal :: b_predict(ll address, char actual_branch)
+int bimodal :: predict(ll address, char actual_branch)
 {	
 	ll index = calc_Index(address);
 	if(predictor_table.at(index) >= 2)
@@ -38,7 +38,7 @@ int bimodal :: b_predict(ll address, char actual_branch)
 		return 0;
 }
 
-void bimodal :: b_update_prediction_table(ll address, int predicted_branch, char actual_branch)
+void bimodal :: update_prediction_table(ll address, int predicted_branch, char actual_branch)
 {
 	ll index = calc_Index(address);
 	if(actual_branch == 't')
@@ -62,14 +62,14 @@ void bimodal :: b_update_prediction_table(ll address, int predicted_branch, char
 
 }
 
-void bimodal :: b_access(ll address, char actual_branch)
+void bimodal :: access(ll address, char actual_branch)
 {
 	predictions++;
-	predicted_branch = b_predict(address, actual_branch);
-	b_update_prediction_table(address, predicted_branch, actual_branch);
+	predicted_branch = predict(address, actual_branch);
+	update_prediction_table(address, predicted_branch, actual_branch);
 }
 
-void bimodal :: b_display_table()
+void bimodal :: display_table()
 {
 	if(branch_buffer != NULL)
 		branch_buffer->display();
@@ -83,7 +83,7 @@ void bimodal :: b_display_table()
 }
 
 
-void bimodal :: b_print_stats()
+void bimodal :: print_stats()
 {
 	if(branch_buffer == NULL)
 	{
