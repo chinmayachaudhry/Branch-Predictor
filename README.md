@@ -2,7 +2,7 @@
 
 ## Bimodal Branch Predictor
 ### Command Line
-./sim_bp bimodal i<sub>B</sub>~ i<sub>BTB</sub> assoc<sub>BTB</sub> Trace_File
+./sim_bp bimodal <i<sub>B</sub>> <i<sub>BTB</sub>> <assoc<sub>BTB</sub>> <Trace_File>
 - i<sub>B</sub>: No. of PC bits used to index the bimodal table
 - i<sub>BTB</sub>: No. of PC used to index the BTB
 - assoc<sub>BTB</sub>: BTB Associativity
@@ -19,7 +19,7 @@
 
 ## GShare Branch Predictor
 ### Command Line
-./sim_bp gshare i<sub>B</sub> h i<sub>BTB</sub> assoc<sub>BTB</sub> Trace_File
+./sim_bp gshare <i<sub>B</sub>> <h> <i<sub>BTB</sub>> <assoc<sub>BTB</sub>> <Trace_File>
 - h: No. of GHR bits.
 
 ### Description
