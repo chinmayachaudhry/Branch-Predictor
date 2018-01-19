@@ -1,11 +1,34 @@
-# Branch-Predictor
-Branch Predictor(BiModal, GShare, Hybrid, Yeh-Patt)
+# Branch-Predictor (Binodal, GShare, Hybrid, Yeh-Patt)
 
-Bimodal Branch Predictor
--> Each entry int the prediction table contains 2-bit counter.
--> Table is indexed by uing branch PC's i+1:2(inclusive), where i is the number of bits needed to index the predictor table.
--> All entries in predictor table are initialized to '2' i.e. 'Weakly Taken' state.
-Steps to complete:
-a. INDEX:         Determine the branch's index into the prediction table
-b. PREDICT:       Make a prediction. Predict 'Taken' id counter >= 2, else predict 'Not Taken'.
-c. UPDATE:        Update the branch predictor, based on actual branch outcome. Increment the counter if branch actually 'Taken', else decrement. Counter saturates at '3' and '0'.
+## Bimodal Branch Predictor
+### Command Line
+./sim_bp bimodal i~B~ i~BTB~ assoc~BTB~ Trace_File
+- i~B~: No. of PC bits used to index the bimodal table
+- i~BTB~: No. of PC used to index the BTB
+- assoc~BTB~: BTB Associativity
+
+### Description
+- Each entry int the prediction table contains 2-bit counter.
+- Table is indexed by uing branch PC's i+1:2(inclusive), where i is the number of bits needed to index the predictor table.
+- All entries in predictor table are initialized to '2' i.e. 'Weakly Taken' state.
+- Steps to complete:
+  1. INDEX:         Determine the branch's *index* into the prediction table
+  2. PREDICT:       Make a prediction. Predict *Taken* id counter >= 2, else predict *Not Taken*.
+  3. UPDATE:        Update the branch predictor, based on actual branch outcome. Increment the counter if branch actually *Taken*, else decrement. Counter *saturates* at '3' and '0'
+
+
+## GShare Branch Predictor
+### Command Line
+./sim_bp bimodal i~B~ h i~BTB~ assoc~BTB~ Trace_File
+- h: No. of GHR bits.
+
+### Description
+- Index used to access predictor table is based on both the branch's PC as well as GHR
+- GHR initialized to 0 and all entries in the table are initialized to 2 i.e. 'Weakly Taken'.
+- Steps to complete:
+  1. INDEX: Determine the branch's *index* into prediction table. The current *h*-bit GHR is XORed with the uppermost *h* bits of the *i* bits from PC for indexing.
+  2. PREDICT: Make a prediction. Predict *Taken* id counter >= 2, else predict *Not Taken*.
+  3. UPDATE: Update both predictor table and GHR
+     - Increment counter if branch was actually taken, else decrement. Counter *saturates* at 0 and 3.
+     - Update GHR. Shift register right by 1 bit and place branche's actual outcome into MSB. (1: TAKEN, 0:NOT-TAKEN)
+
