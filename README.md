@@ -2,10 +2,10 @@
 
 ## Bimodal Branch Predictor
 ### Command Line
-./sim_bp bimodal i<sub>B</sub>~ i<sub>BTB</sub> assoc<sub>BTB</sub> Trace_File
-- i<sub>B</sub>: No. of PC bits used to index the bimodal table
-- i<sub>BTB</sub>: No. of PC used to index the BTB
-- assoc<sub>BTB</sub>: BTB Associativity
+./sim_bp bimodal <i<sub>B</sub>> <i<sub>BTB</sub>> <assoc<sub>BTB</sub>> <Trace_File>
+- __i<sub>B</sub>__: No. of PC bits used to index the bimodal table
+- __i<sub>BTB</sub>__: No. of PC used to index the BTB
+- __assoc<sub>BTB</sub>__: BTB Associativity
 
 ### Description
 - Each entry int the prediction table contains 2-bit counter.
@@ -19,14 +19,14 @@
 
 ## GShare Branch Predictor
 ### Command Line
-./sim_bp gshare i<sub>B</sub> h i<sub>BTB</sub> assoc<sub>BTB</sub> Trace_File
-- h: No. of GHR bits.
+./sim_bp gshare <i<sub>B</sub>> <ghr<sub>B</sub>> <i<sub>BTB</sub>> <assoc<sub>BTB</sub>> <Trace_File>
+- __ghr<sub>B</sub>__: No. of GHR bits.
 
 ### Description
 - Index used to access predictor table is based on both the branch's PC as well as GHR
 - GHR initialized to 0 and all entries in the table are initialized to 2 i.e. __*Weakly Taken*__
 - Steps to complete:
-  1. __INDEX__: Determine the branch's *index* into prediction table. The current *h*-bit GHR is XORed with the uppermost *h* bits of the *i* bits from PC for indexing.
+  1. __INDEX__: Determine the branch's *index* into prediction table. The current *ghr*-bit GHR is XORed with the uppermost *ghr* bits of the *i* bits from PC for indexing.
   2. __PREDICT__: Make a prediction. Predict *Taken* id counter >= 2, else predict *Not Taken*.
   3. __UPDATE__: Update both predictor table and GHR
      - Increment counter if branch was actually taken, else decrement. Counter *saturates* at 0 and 3.
