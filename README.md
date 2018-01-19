@@ -43,10 +43,9 @@
 
 ### Description
 - *hybrid predictor* contains both the __*Bimodal*__ and __*GShare*__ predictors.
-- Uses *Chooser Table* to select which predictor's prediction to use.
-- All counters in chooser table initialized to 1
-- Index used to access predictor table is based on both the branch's PC as well as GHR
-- GHR initialized to 0 and all entries in the table are initialized to 2 i.e. __*Weakly Taken*__
+- Uses *Chooser Table* of 2<sup>i<sub>C</sub></sup> 2-bit counters to select which predictor's prediction to use.
+- All counters in chooser table initialized to 1 i.e. initally use *Bimodal's* prediction
+- Use <i<sub>C</sub>>+1:2 bits to indexIndex used to access predictor table is based on both the branch's PC as well as GHR
 - Steps to complete:
   1. Get one prediction from *Bimodal* and *Gshare* each.
   2. Get indexed couter from _chooser table_. If counter >= 2, use gshare predictio, else use bimodal prediction.
