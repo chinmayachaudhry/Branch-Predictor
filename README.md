@@ -53,4 +53,22 @@
   4. Update the chooser table counters. If *gshare prediction* was correct, increment counter(saturating at 3). If *bimodal prediction* is correct, decrement counter(saturating at 0).
   5. If both predictors give the same prediction, __DON'T__ update chooser table counters. Rationale being that there is no reason to prefer 1 predictor over other
 
+## Yeh-Patt Branch Predictor
+### Command Line
+./sim_bp yehpatt <i<sub>H</sub>> <i<sub>P</sub>> <i<sub>BTB</sub>> <assoc<sub>BTB</sub>> <Trace_File>
+- __i<sub>P</sub>__: No. of bits used to index Pattern Table
+- __i<sub>H</sub>__: No. of bits used to index History Table
+- Rest same as above
+
+### Description
+- History Table ia a set of __i<sub>H</sub>__ local history registers
+- Pattern Table is a set of 2-bit saturating counters for each history entry
+- All shifted registers are initialized to __zero__ and entries in prediction table are initialized to _2_
+- Steps to complete:
+  1. __INDEX__: Determine the branch's __index__ into history table using PC.
+  2. __INDEX__: Determine branch's __index__ into pattern table.
+  3. __PREDICT__: Make a prediction
+  4. __UPDATE__: Update the branch predictor and GHR register based on branch's actual outcome
+     - Increment predictor table's counter if branch was actually taken, else decrement. Counter *saturates* at 0 and 3.
+     - Update local history register. Shift register right by 1 bit and place branche's actual outcome into MSB. (1: Taken, 0: Not-Taken)
 

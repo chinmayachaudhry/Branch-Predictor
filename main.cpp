@@ -2,6 +2,7 @@
 #include "btb.h"
 #include "gshare.h"
 #include "hybrid.h"
+#include "yehpatt.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -18,7 +19,7 @@ int main(int argc, char *argv[])
 {
 	string trace_file;
 	ll predictor_index_bits, ghr_bits, btb_index_bits, btb_assoc;
-	ll chooser_table_index_bits, bimodal_index_bits, gshare_index_bits;
+	ll chooser_table_index_bits, bimodal_index_bits, gshare_index_bits, history_index_bits;
 
 	ll address;
 	int predictor_type;
@@ -31,11 +32,14 @@ int main(int argc, char *argv[])
 		predictor_type = 1;
 	else if(strcmp(argv[1], "hybrid") == 0)
 		predictor_type = 2;
+	else if(strcmp(argv[1], "yehpatt") == 0)
+		predictor_type = 3;
 	ifstream fin;
 
 	bimodal *b;
 	gshare *g;
 	hybrid *h;
+	yehpatt *y;
 	btb *branch_buffer;
 	switch(predictor_type)
 	{
@@ -87,6 +91,20 @@ int main(int argc, char *argv[])
 			break;
 //			b->display_table();
 //			cout << "BIMODAL";
+		
+		case 3:
+			history_index_bits = atol(argv[2]);
+			predictor_index_bits = atol(argv[3]);
+			btb_index_bits = atol(argv[4]);
+			btb_assoc = atol(argv[5]);
+			//cout << "index: " << btb_index_bits << " assoc: " << btb_assoc << endl;
+			strcpy(fname, argv[6]);
+			if(btb_index_bits == 0)
+				branch_buffer = NULL;
+			else
+				branch_buffer = new btb(btb_index_bits, btb_assoc);
+			y = new yehpatt(history_index_bits, predictor_index_bits, branch_buffer);
+			break;
 
 	}
 
@@ -141,7 +159,24 @@ int main(int argc, char *argv[])
 			}
 			fin.close();
 			break;
+		
+		case 3:
+			while(fin >> hex >> address >> actual_branch)
+			{
+				branches++;
+				if(btb_index_bits != 0 && btb_assoc != 0)
+				{
+					branch_buffer->access(address, actual_branch);
+					if(branch_buffer->get_btb_Hit() == true)		
+						y->access(address, actual_branch);	
+				}	
+				else
+					y->access(address, actual_branch);	
+			}
+			fin.close();
+			break;
 	}
+
 	
 	cout << "Command Line:" << endl;
 	switch(predictor_type)
@@ -162,6 +197,12 @@ int main(int argc, char *argv[])
 			cout << "./sim_bp hybrid " << argv[2] << " " << argv[3] << " " << argv[4] << " " << argv[5] << " " << argv[6] << " " << argv[7] << " " << argv[8] << endl;
 			h->display_table();
 			h->print_stats();
+			break;	
+		
+		case 3:	
+			cout << "./sim_bp yehpatt " << argv[2] << " " << argv[3] << " " << argv[4] << " " << argv[5] << " " << argv[6] << endl;
+			y->display_table();
+			y->print_stats();
 			break;	
 	}
 	
